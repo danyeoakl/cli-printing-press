@@ -334,9 +334,10 @@ func dropGeneratedImportLines(src, needle string) string {
 	return strings.Join(kept, "\n")
 }
 
-// TestGenerate_NoCredsPermsForNonAuthSpec proves the guard is gated on
-// shouldEmitAuth(): a spec with no auth persists no token, so shipping the
-// check would be dead weight. public-param-names declares auth.type: none.
+// TestGenerate_NoCredsPermsForNonAuthSpec proves credential persistence stays
+// gated on shouldEmitAuth(). The DACL evaluator is shared: auth-none config
+// trust uses it, and a spec with no auth still persists no token.
+// public-param-names declares auth.type: none.
 func TestGenerate_NoCredsPermsForNonAuthSpec(t *testing.T) {
 	if testing.Short() {
 		t.Skip("generated CLI compile tests run in the full generated-test CI lane")
@@ -350,7 +351,7 @@ func TestGenerate_NoCredsPermsForNonAuthSpec(t *testing.T) {
 	require.NoError(t, New(apiSpec, outputDir).Generate())
 
 	_, err = os.Stat(filepath.Join(outputDir, "internal", "cliutil", "creds_perms_eval.go"))
-	require.True(t, os.IsNotExist(err), "creds_perms_eval.go must not be emitted for a non-auth spec")
+	require.NoError(t, err, "creds_perms_eval.go is shared by auth-none config trust")
 	_, err = os.Stat(filepath.Join(outputDir, "internal", "cliutil", "creds_perms_windows_test.go"))
 	require.True(t, os.IsNotExist(err), "Windows resolver test must not be emitted for a non-auth spec")
 

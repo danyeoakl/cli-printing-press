@@ -125,6 +125,7 @@ func TestGenerateProjectsCompile(t *testing.T) {
 		"internal/cliutil/filelock_unix.go",
 		"internal/cliutil/filelock_windows.go",
 		"internal/cliutil/filelock_test.go",
+		"internal/cliutil/creds_perms_eval.go",
 		"internal/cliutil/darwin_acl.go",
 		"internal/cliutil/darwin_acl_darwin.go",
 		"internal/cliutil/darwin_acl_test.go",
@@ -2946,7 +2947,7 @@ func TestGenerateBrowserChromeTransport(t *testing.T) {
 
 	clientGo := readGeneratedFile(t, outputDir, "internal", "client", "client.go")
 	assert.NotContains(t, clientGo, "github.com/enetx/")
-	assert.Contains(t, clientGo, "return chromeClient(timeout, jar, skipTLSVerify)")
+	assert.Contains(t, clientGo, "return chromeClient(timeout, jar, resolved)")
 
 	chromeGo := readGeneratedFile(t, outputDir, "internal", "client", "chrome.go")
 	assert.Contains(t, chromeGo, `chromeALPN = []string{"h2", "http/1.1"}`)
@@ -3061,7 +3062,7 @@ func TestGenerateBrowserChromeH3Transport(t *testing.T) {
 
 	clientGo := readGeneratedFile(t, outputDir, "internal", "client", "client.go")
 	assert.NotContains(t, clientGo, "github.com/enetx/")
-	assert.Contains(t, clientGo, "return chromeClient(timeout, jar, skipTLSVerify)")
+	assert.Contains(t, clientGo, "return chromeClient(timeout, jar, resolved)")
 	assert.NotContains(t, clientGo, `req.Header.Set("Accept",`,
 		"chrome header overlay owns Accept on the H3 path")
 
@@ -3187,7 +3188,7 @@ func TestGenerateBrowserHTTPTransportDisablesHTTP2(t *testing.T) {
 
 	clientGo := readGeneratedFile(t, outputDir, "internal", "client", "client.go")
 	assert.Contains(t, clientGo, `"crypto/tls"`)
-	assert.Contains(t, clientGo, `transport := http.DefaultTransport.(*http.Transport).Clone()`)
+	assert.Contains(t, clientGo, `cloneDefaultHTTPTransport()`)
 	assert.Contains(t, clientGo, `transport.TLSClientConfig.NextProtos = []string{"http/1.1"}`)
 	assert.Contains(t, clientGo, `transport.TLSNextProto = make(map[string]func(authority string, c *tls.Conn) http.RoundTripper)`)
 	assert.NotContains(t, clientGo, "github.com/enetx/")
@@ -3226,7 +3227,10 @@ func TestBrowserHTTPTransportRejectsH2ALPN(t *testing.T) {
 	}
 	t.Cleanup(func() { defaultTransport.TLSClientConfig = originalTLSConfig })
 
-	client := newHTTPClient(time.Second, nil)
+	client, err := newHTTPClient(time.Second, nil, tlsSettings{})
+	if err != nil {
+		t.Fatalf("newHTTPClient: %v", err)
+	}
 	resp, err := client.Get(server.URL)
 	if err != nil {
 		t.Fatalf("browser-http request failed after inherited h2 ALPN: %v", err)
@@ -14010,7 +14014,7 @@ func TestGenerate_ComposedAuthUsesBrowserTemplate(t *testing.T) {
 	assert.Contains(t, content, "decodeCookieValue")
 	assert.Contains(t, content, "cookieNameLooksCSRF")
 	assert.Contains(t, content, `"skip-validation"`)
-	assert.Contains(t, content, "validateComposedAuthProbe(composed, validationCookies, !skipValidation)")
+	assert.Contains(t, content, "validateComposedAuthProbe(composed, validationCookies, !skipValidation, cfg)")
 	assert.NotContains(t, content, "host_key LIKE")
 	assert.Contains(t, content, "printMissingCookieHint")
 	assert.Contains(t, content, "required cookies present")

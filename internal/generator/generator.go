@@ -3039,6 +3039,7 @@ func (g *Generator) renderSingleFiles() error {
 		"cliutil_filelock_unix.go.tmpl":            filepath.Join("internal", "cliutil", "filelock_unix.go"),
 		"cliutil_filelock_windows.go.tmpl":         filepath.Join("internal", "cliutil", "filelock_windows.go"),
 		"cliutil_filelock_test.go.tmpl":            filepath.Join("internal", "cliutil", "filelock_test.go"),
+		"cliutil_creds_perms_eval.go.tmpl":         filepath.Join("internal", "cliutil", "creds_perms_eval.go"),
 		"cliutil_darwin_acl.go.tmpl":               filepath.Join("internal", "cliutil", "darwin_acl.go"),
 		"cliutil_darwin_acl_darwin.go.tmpl":        filepath.Join("internal", "cliutil", "darwin_acl_darwin.go"),
 		"cliutil_darwin_acl_test.go.tmpl":          filepath.Join("internal", "cliutil", "darwin_acl_test.go"),
@@ -3211,12 +3212,8 @@ func (g *Generator) renderOptionalSupportFiles() error {
 		}
 		// Read-time credentials permission check (S1): a persisted token file
 		// written 0600 can later drift to loose perms, so guard it at load time.
-		// Emitted alongside credentials because it only matters when a token is
-		// persisted. Pure evaluator is build-tag-free (unit-testable anywhere);
-		// the POSIX and Windows guards are platform-gated.
-		if err := g.renderTemplate("cliutil_creds_perms_eval.go.tmpl", filepath.Join("internal", "cliutil", "creds_perms_eval.go"), authData); err != nil {
-			return fmt.Errorf("rendering cliutil creds perms evaluator: %w", err)
-		}
+		// The evaluator itself is always emitted so a loose config file can
+		// share the same DACL verdict. These platform guards stay with auth.
 		if err := g.renderTemplate("cliutil_creds_perms_eval_test.go.tmpl", filepath.Join("internal", "cliutil", "creds_perms_eval_test.go"), authData); err != nil {
 			return fmt.Errorf("rendering cliutil creds perms evaluator test: %w", err)
 		}
@@ -3995,6 +3992,7 @@ func (g *Generator) GenerateMCPSurface() error {
 		"cliutil_filelock_unix.go.tmpl":           filepath.Join("internal", "cliutil", "filelock_unix.go"),
 		"cliutil_filelock_windows.go.tmpl":        filepath.Join("internal", "cliutil", "filelock_windows.go"),
 		"cliutil_filelock_test.go.tmpl":           filepath.Join("internal", "cliutil", "filelock_test.go"),
+		"cliutil_creds_perms_eval.go.tmpl":        filepath.Join("internal", "cliutil", "creds_perms_eval.go"),
 		"cliutil_darwin_acl.go.tmpl":              filepath.Join("internal", "cliutil", "darwin_acl.go"),
 		"cliutil_darwin_acl_darwin.go.tmpl":       filepath.Join("internal", "cliutil", "darwin_acl_darwin.go"),
 		"cliutil_darwin_acl_test.go.tmpl":         filepath.Join("internal", "cliutil", "darwin_acl_test.go"),

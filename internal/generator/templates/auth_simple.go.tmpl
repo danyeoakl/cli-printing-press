@@ -310,7 +310,16 @@ func newAuthLoginCmd(flags *rootFlags) *cobra.Command {
 			if err != nil {
 				return configErr(err)
 			}
+			flags.applyTLSFlags(cfg)
+{{- if .UsesBrowserHTTPTransport}}
+			if flags.insecure {
+				cfg.SetSkipTLSVerify(true)
+			}
+{{- end}}
 			c := client.New(cfg, flags.timeout, flags.rateLimit)
+			if tlsErr := c.TLSConfigError(); tlsErr != nil {
+				return configErr(tlsErr)
+			}
 			if c.Session == nil {
 				return authErr(fmt.Errorf("session handshake manager is not configured"))
 			}
