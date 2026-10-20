@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.33.9](https://github.com/mvanhorn/cli-printing-press/compare/v4.33.8...v4.33.9) (2026-10-20)
+
+
+### Bug Fixes
+
+* **cli:** default omitted config block to TOML ([#5106](https://github.com/mvanhorn/cli-printing-press/issues/5106)) ([0c43678](https://github.com/mvanhorn/cli-printing-press/commit/0c436784a3e827b69cd4540bc5597bd8a17f4728))
+* **cli:** opt in to host-only subdomain cookies in press-auth ([#5105](https://github.com/mvanhorn/cli-printing-press/issues/5105)) ([20e39ca](https://github.com/mvanhorn/cli-printing-press/commit/20e39ca7e0e2153dcfb920472c91ac33a7538622))
+* **cli:** rank incremental sync date filters ([#5107](https://github.com/mvanhorn/cli-printing-press/issues/5107)) ([e4d719e](https://github.com/mvanhorn/cli-printing-press/commit/e4d719e904c0aa50baf2d54bd1e839273dc13aaa))
+* **cli:** reduce novel-host false positives for file paths and version strings ([#5051](https://github.com/mvanhorn/cli-printing-press/issues/5051)) ([228b82e](https://github.com/mvanhorn/cli-printing-press/commit/228b82e38fab822523912f38c2e88cb87d2c0a09))
+* **cli:** run verify probes inside the mock environment ([#5102](https://github.com/mvanhorn/cli-printing-press/issues/5102)) ([10c6496](https://github.com/mvanhorn/cli-printing-press/commit/10c64962fb7b67c545eb6bdbbd95c95737859142))
+* **cli:** stop dogfood treating quote gaps as config fields ([#5108](https://github.com/mvanhorn/cli-printing-press/issues/5108)) ([46d42b5](https://github.com/mvanhorn/cli-printing-press/commit/46d42b58e5b700c7234a15a7cdf13d5f671d74b0)), closes [#4626](https://github.com/mvanhorn/cli-printing-press/issues/4626)
+
 ## [4.33.8](https://github.com/mvanhorn/cli-printing-press/compare/v4.33.7...v4.33.8) (2026-10-19)
 
 
